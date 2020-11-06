@@ -257,8 +257,8 @@ class Trainer(object):
                     self.write_stream('lr',
                                       (self.training_steps, self.optimizer.get_lr()[0]))
 
-            if num_steps is not None and i >= num_steps:
-                break
+                    if num_steps is not None and i >= num_steps:
+                        break
 
         return meter_results(meters)
 

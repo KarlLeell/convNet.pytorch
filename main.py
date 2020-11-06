@@ -296,6 +296,7 @@ def main_worker(args):
     logging.info('data regime: %s', train_data)
     args.start_epoch = max(args.start_epoch, 0)
     trainer.training_steps = args.start_epoch * len(train_data)
+    t = time.time()
     for epoch in range(args.start_epoch, args.epochs):
         trainer.epoch = epoch
         train_data.set_epoch(epoch)
@@ -342,6 +343,8 @@ def main_worker(args):
         values = dict(epoch=epoch + 1, steps=trainer.training_steps)
         values.update({'training ' + k: v for k, v in train_results.items()})
         values.update({'validation ' + k: v for k, v in val_results.items()})
+        elapsed = time.time() - t
+        values.update({'Training time' : elapsed})
         results.add(**values)
 
         results.plot(x='epoch', y=['training loss', 'validation loss'],
@@ -358,6 +361,9 @@ def main_worker(args):
                          legend=['gradient L2 norm'],
                          title='Gradient Norm', ylabel='value')
         results.save()
+        if val_results['prec1'] >= 94:
+            break
+    logging.info('Training time to 94 val acc/100 epochs: ' + str(elapsed))
 
 
 if __name__ == '__main__':
